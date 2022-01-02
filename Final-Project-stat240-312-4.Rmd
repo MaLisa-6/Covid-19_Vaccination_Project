@@ -1,0 +1,443 @@
+---
+title: "Factors Influencing COVID-19 Vaccinations"
+output: html_document
+---
+
+##### Assignment: Final Project
+##### Due date: 04/26/2021
+##### Group 312-4: Tenzin Choden, Dan He, Yiping He, Zihao Shen
+
+## **Introduction**
+
+As scientists learned more and more about COVID-19, vaccine agencies in each country had launched a variety of vaccines in order to better take control of the pandemic. As we saw on the news, if we didn't get many people vaccinated soon, there will be variants, which would counteract the effectiveness of the vaccine thus result in a less controllable situation for the whole society. We also learned from the news that while some countries had high vaccination rates, some countries still had extremely low vaccination rates, which made the end of this pandemic unreachable. Therefore, we chose to focus on the uneven distribution of COVID-19 vaccinations among different regions, as it was one of the most concerning issues in recent situations. 
+
+In this project, we planned to answer the question: what factors contribute to the uneven distribution of COVID-19 vaccinations among different regions? In order to better understand factors that may affect vaccination, we analyzed vaccination data from countries around the world from January 2020 to April 2021, to see if we could find some sort of association between different factors (ex. GDP, COVID cases etc.) and vaccination rate. We first explored the general trends of vaccinations and types of vaccines among different regions. After getting a basic understanding of these trends, we further explored the reasons behind these trends by looking at the associated variables of each region such as GDP per capita, human development index, GNI per capita, and the number of COVID-19 cases. We concluded that the vaccination rate is higher in regions that are more developed and have higher average income, and regions with more reported COVID-19 cases also tend to have higher vaccination rates.
+
+## **Background**
+
+### Information
+
+Since the outbreak of the COVID-19 pandemic at the beginning of 2020, there have been over 135 million CPVID-19 cases in total, causing nearly 3 million deaths till now (04/10/2021). At present, there are still about 23.7 million active cases, while 99.6% of them are in mild condition. The outbreak was at first concentrated in Asia and later expanded to the world. While most countries have taken effective measures to contain the pandemic, there is still a large number of new cases every day. 
+
+Below is a world map of average daily cases per 100000 people in the past week (04/04/2021 - 04/10/2021). The trend of COVID-19 cases are easily deducted from color level of the printed regions. The darker the color is, the higher positive rate that region has during the past week. As we can see from the map, continents such as Europe, North and South America have higher average number of cases than Asia, Africa, and Oceania. In a nutshell, North and South America have most cases with deep dark red color, while Europe also has serious COVID situations within a concentrated range of countries.
+
+  ![](./covid-cases.jpg)
+  
+Within less than a year after the outbreak of the COVID-19 pandemic, research teams from different countries have rosen to the challenge and developed several types of vaccines that protect from SARS-CoV-2, the virus that causes COVID-19. Since December 2020, these vaccines have been come into use among the public, and till now, 754 million vaccine doses have been administered worldwide. However, there is still a striking divide between different continents and countries. While high- and upper-middle income countries possess more than 80% of vaccine shots, only 0.1% of doses have been administered in low-income countries.
+
+Below is a world map of COVID-19 vaccination doses administered per 100 people.
+The darker the color is, the higher vaccination rate that region has. As we can see from the map, continents such as North America, Europe and Asia have higher average vaccination rates than Africa and Oceania. In general, the United states is the country that has the highest vaccination rate. The vaccine distribution rate has been highly inequitable leaving poorer countries vulnerable to more waves.
+
+  ![](./covid-vaccinations.jpg)
+
+### Datasets
+
+We used three datasets for our analysis from two websites: https://github.com/owid/covid-19-data/tree/master/public/data and https://datacatalog.worldbank.org/dataset/gni-capita-ranking-atlas-method-and-ppp-based.
+
+We got our data from Our World in Data (ourworldindata.org) and the World Bank. Our World in Data is a project of the Global Change Data Lab, a non–profit organization based in the United Kingdom. We trust the source because Our World in Data is produced as a collaborative effort between researchers of one of the World’s most renowned universities, University of Oxford, who are the scientific contributors of the website content and the non-profit organization Global Change Data Lab, who owns, publishes and maintains the website and the data tools. Another reason we got great assurance using the data was that the board of trustees of Our World in Data are all professors at various universities. Besides, the World Bank is an international financial institution that provides loans and grants to the governments of low- and middle-income countries for the purpose of pursuing capital projects. We trust the data because the bank website is governmental website and since they are particularly focusing on financial related information, the gross national income per capital data from this website would be sufficient and reliable.
+
+The dataset **owid-covid-data** derived from website contains detailed information about covid-19 cases, tests, vaccinations, and some other health-related indexes for most countries and regions around the world, ranging from January 2020 to most recent (April 2021).
+
+The dataset **locations** derived from website contains updated information about types of vaccines used in each country or region around the world.
+
+The dataset **GNIPC** derived from website contains updated information about the gross national income per capita for each country based on the World Bank Atlas method and purchasing power parity (PPP).
+
+### Variables
+
+In **owid-covid-data** dataset, there are 59 variables, and we used 9 of them in our analysis:
+
+- **continent**: continent of the location
+- **location**: name of the country or region
+- **date**: date of observation
+- **total_cases**: total confirmed cases of COVID-19
+- **new_vaccinations**: new COVID-19 vaccination doses administered
+- **total_vaccinations**: total number of COVID-19 vaccination doses administered
+- **population**: population in 2020
+- **Gross Domestic Product (GDP) per capita**: is the Gross Domestic Product (GDP) per person. It is the total market value of all finished goods and services produced within a country in a set time period and then divide it by the population in each country.
+- **Human Development Index (HDI)** : a statistic composite index of life expectancy, education, and per capita income indicators, which are used to rank countries into four tiers of human development. It is about expanding the richness of human life, rather than simply the richness of the economy in which human beings live. It is an approach that is focused on people and their opportunities and choice. 
+  
+In **locations** dataset, there are 6 variables, and we used 3 of them and created 2 new variables in our analysis:
+
+- **location**: name of the country or region
+- **vaccines**: list of vaccines administered in the country up to the current date
+- **last_observation_date**: date of the last observation in our data
+- **wide_vaccination**: whether the vaccinations per hundred is more than 5 or not
+- **severe_covid**: whether the COVID-19 cases per million is more than 5000 or not
+
+In **GNIPC** dataset, there are 4 variables, and we used 2 of them in our analysis:
+
+- **location**: name of the country or region
+- **Gross National Income (GNI) capita**: the gross national income per capita. It is the total income received by the country from its residents and businesses regardless of whether they are located and then divide it by the population in each country.
+
+**missing data/NA value**: There are missing values since data is collected at a daily basis and could be inadequate sometimes.  
+
+### Methods
+
+When exploring the relationships between each factor (location, GDP per capita, type of vaccine, number of cases, etc.) and vaccination, in order to make the comparison more meaningful, we created a variable **vaccinations_per_hundred**, which showed the number of vaccination doses administered per 100 people. Then we summarized the data, made different types of graphs, and drew conclusions regarding the relationships between variables by observing the graphs. 
+
+When observing scatterplots, we used linear regression in order to find more accurate relationships. We also used a hypothesis test when examining the factor number of COVID cases. We first divided all locations into two groups, widely vaccinated and not widely vaccinated, according to their number of vaccinations per hundred people. Then, we divided all locations into severe and non severe according to their number of COVID cases per million people. We wanted to test whether the proportions of widely vaccinated locations in severe and non severe locations are equal. We chose the two thresholds by directly observing the dataset and finding the approximate medians.
+  
+### Assumptions
+
+We made some assumptions before using the data to answer our questions: 
+
+- Some entries of **new_vaccinations** and **total_vaccinations** were empty, and we assumed that all the empty entries referred to 0.
+- Since each location had data for many different dates, we assumed that **gdp_per_capita**, **human_development_index**, and **population** were the same for each location. 
+- We assumed that the maximums of **total_cases** and **total_vaccinations** for each location represented the latest data.
+- We assumed that the sample statistic that we used for hypothesis test (proportion of **wide_vaccination** locations) was approximately normally distributed in the population.
+
+## **Analysis**
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE,message=FALSE,warning=FALSE,cache=TRUE,autodep=TRUE,cache.comments=FALSE)
+library(tidyverse)
+library(lubridate)
+source("../../scripts/viridis.R")
+source("../../scripts/ggprob.R")
+```
+
+```{r, include = FALSE}
+income <- read_csv("../../data/GNIPC.csv") %>%
+  select(X4, X5) %>%
+  slice(7:200) %>%
+  rename(location = X4,
+         gni_per_capita = X5)
+
+replaceCommas<-function(x){
+  x<-as.numeric(gsub("\\,", "", x))
+}
+
+income$gni_per_capita <- replaceCommas(income$gni_per_capita)
+
+covid <- read.csv("../../data/owid-covid-data.csv") %>%
+  filter(continent != "") %>%
+  select(continent, location, date, total_cases, new_vaccinations, total_vaccinations, 
+         population, gdp_per_capita, human_development_index) %>%
+  mutate(total_cases = replace_na(total_cases, 0),
+         new_vaccinations = replace_na(new_vaccinations, 0),
+         total_vaccinations = replace_na(total_vaccinations, 0)) %>%
+  drop_na()
+
+vaccine <- read.csv("../../data/locations.csv") %>%
+  select(location, vaccines, last_observation_date) %>%
+  mutate(vaccines = as.list(strsplit(vaccines, ", ")))
+```
+
+### 1. General Analysis: 
+
+> We first wanted to learn about the general trends of vaccinations and types of vaccines among different regions.
+
+#### (a) Vaccinations
+
+> Firstly, we wanted to explore how different locations affect number of vaccinations, in order to help better understand furture analysis. Since there were hundreds of locations in the dataset, which was difficult to analyze, we decided to first investigate the relationship between continent and number of vaccinations per hundred people in each continent. We made a bar graph to show the trend.
+
+```{r, echo = FALSE}
+covid_location <- covid %>%
+  group_by(location, continent) %>%
+  summarize(gdp_per_capita = mean(gdp_per_capita), 
+            human_development_index = mean(human_development_index), 
+            population = mean(population), 
+            total_cases = max(total_cases),
+            total_vaccinations = max(total_vaccinations), 
+            cases_per_million = total_cases / population * 1000000,
+            vaccinations_per_hundred = total_vaccinations / population * 100,
+            wide_vaccination = if_else(vaccinations_per_hundred > 5, "True", "False"),
+            econ_status = if_else(gdp_per_capita > 12000, "developed", "developing"),
+            severe_covid = if_else(cases_per_million > 5000, "True", "False")) %>%
+  left_join(vaccine, by = "location") %>%
+  left_join(income, by = "location")
+
+covid_continent <- covid_location %>%
+  group_by(continent) %>%
+  summarize(population = sum(population), 
+            total_vaccinations = sum(total_vaccinations), 
+            vaccinations_per_hundred = total_vaccinations / population * 100)
+
+ggplot(covid_continent) +
+  geom_col(aes(reorder(continent,vaccinations_per_hundred),vaccinations_per_hundred) , color = "black", fill = "hotpink") +
+  theme_bw() +
+  xlab("Continent") +
+  ylab("Vaccinations per Hundred People") +
+  ggtitle("Vaccinations per Hundred People in Each Continent")
+```
+
+According to the bar graph, we could find that there was a clear trend of different vaccination rates among continents. While Africa had the lowest vaccination rate, North America had the highest vaccination rate. There was also an increasing trend of vaccination rates from Oceania to Asia, South America, and Europe. This result was basically consistent with the trends shown in the two maps.
+
+#### (b) Type of vaccines
+
+> Moreoever, we also wanted to find the trends of vaccine types used by different regions. We made a bar graph to show the relationship between types of vaccines and the number of countries using each type.
+
+```{r, echo = FALSE}
+covid_vaccine <- covid_location %>%
+  drop_na() %>%
+  mutate(Oxford_AstraZeneca = case_when(grepl("Oxford/AstraZeneca", vaccines, fixed=TRUE) ~ 1,
+                                        TRUE ~ 0),
+         Sputnik_V = case_when(grepl("Sputnik V", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+         Pfizer_BioNTech = case_when(grepl("Pfizer/BioNTech", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+         Sinovac = case_when(grepl("Sinovac", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+         Sinopharm_Beijing = case_when(grepl("Sinopharm/Beijing", vaccines, fixed=TRUE) ~ 1,
+                                       TRUE ~ 0),
+         Moderna = case_when(grepl("Moderna", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+         Sinopharm_Wuhan = case_when(grepl("Sinopharm/Wuhan", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+        Johnson_Johnson = case_when(grepl("Johnson&Johnson", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+        Covaxin = case_when(grepl("Covaxin", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+        EpiVacCorona = case_when(grepl("EpiVacCorona", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0)) %>%
+  select(location, continent, Oxford_AstraZeneca, Sputnik_V, Pfizer_BioNTech, Sinovac, Sinopharm_Beijing,Moderna, Sinopharm_Wuhan, Johnson_Johnson, Covaxin,EpiVacCorona)
+
+vaccine_num_country <- data.frame(vaccines = c("Oxford_AstraZeneca", "Sputnik_V", "Pfizer_BioNTech", "Sinovac", "Sinopharm_Beijing","Moderna", "Sinopharm_Wuhan", "Johnson_Johnson", "Covaxin", "EpiVacCorona"),
+                 total_countries = c(sum(covid_vaccine$Oxford_AstraZeneca),
+                                  sum(covid_vaccine$Sputnik_V),
+                                  sum(covid_vaccine$Pfizer_BioNTech),
+                                  sum(covid_vaccine$Sinovac),
+                                  sum(covid_vaccine$Sinopharm_Beijing),
+                                  sum(covid_vaccine$Moderna),
+                                  sum(covid_vaccine$Sinopharm_Wuhan),
+                                  sum(covid_vaccine$Johnson_Johnson),
+                                  sum(covid_vaccine$Covaxin),
+                                  sum(covid_vaccine$EpiVacCorona)))
+
+ggplot(vaccine_num_country) +
+  geom_col(aes(reorder(vaccines,total_countries), total_countries), color = "black",fill="hotpink") +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  xlab("Type of Vaccines") +
+  ylab("Number of Regions Using the Vaccine") +
+  ggtitle("Total Number of Regions Using Each Type of Vaccines")
+```
+
+According to the bar graph, we could see that the Oxford/AstraZeneca vaccine and the Pfizer_BioNTech vaccine were used by most of regions, and Moderna, Sinopharm_Beijing, Sinovac, and Sputnik_V vaccines were used by about one third of regions. The remaining four types of vaccines were only used by a few countries. 
+
+> In order to figure out the trend of the number of regions using each type of vaccines, we also created a line chart grouped by vaccine types, which showed the change of number of countries on each given date for each vaccine.
+
+```{r, echo = FALSE}
+new_vaccination_use_type <- covid %>%
+  filter(date >= "2020/08/01") %>%
+  select(continent, location, date, new_vaccinations) %>%
+  mutate(last_observation_date = format(strptime(as.character(date), "%Y/%m/%d"), "%Y-%m-%d")) %>%
+  select(-date) %>%
+  inner_join(vaccine, by = c("location", "last_observation_date")) %>%
+  mutate(Oxford_AstraZeneca = case_when(grepl("Oxford/AstraZeneca", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+         Sputnik_V = case_when(grepl("Sputnik V", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+         Pfizer_BioNTech = case_when(grepl("Pfizer/BioNTech", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+         Sinovac = case_when(grepl("Sinovac", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+         Sinopharm_Beijing = case_when(grepl("Sinopharm/Beijing", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+         Moderna = case_when(grepl("Moderna", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+         Sinopharm_Wuhan = case_when(grepl("Sinopharm/Wuhan", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+        Johnson_Johnson = case_when(grepl("Johnson&Johnson", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+        Covaxin = case_when(grepl("Covaxin", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0),
+        EpiVacCorona = case_when(grepl("EpiVacCorona", vaccines, fixed=TRUE) ~ 1,TRUE ~ 0)) %>%
+  mutate(month_date = str_sub(last_observation_date,6,10)) %>%
+  select(location, continent, month_date, last_observation_date, new_vaccinations, Oxford_AstraZeneca, Sputnik_V, Pfizer_BioNTech, Sinovac, Sinopharm_Beijing,Moderna, Sinopharm_Wuhan, Johnson_Johnson, Covaxin,EpiVacCorona) %>%
+  group_by(month_date) %>%
+  summarise(total_new_vaccinations = sum(new_vaccinations), 
+            Oxford_AstraZeneca = sum(Oxford_AstraZeneca), 
+            Sputnik_V = sum(Sputnik_V), 
+            Pfizer_BioNTech = sum(Pfizer_BioNTech), 
+            Sinovac = sum(Sinovac), 
+            Sinopharm_Beijing = sum(Sinopharm_Beijing),
+            Moderna = sum(Moderna), 
+            Sinopharm_Wuhan = sum(Sinopharm_Wuhan), 
+            Johnson_Johnson = sum(Johnson_Johnson), 
+            Covaxin = sum(Covaxin),
+            EpiVacCorona= sum(EpiVacCorona)) %>%
+  pivot_longer(cols = Oxford_AstraZeneca: EpiVacCorona, names_to= "vaccine_type", values_to = "num_vaccine_used_by_country")
+
+ggplot(new_vaccination_use_type,aes(month_date,num_vaccine_used_by_country, group = vaccine_type))+
+  geom_line(aes(color = vaccine_type)) +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  xlab("Date") +
+  ylab("Number of Countries") +
+  ggtitle("Relationship between Number of Countries and Date")
+```
+
+According to this line chart, we could see that the number of countries and date were overall positively correlated. As date came close to recent, vaccines were used by more countries. Moreover, some types of vaccines had a greater slope than others during the most recent period, such as Moderna and Oxford/AstraZeneca. 
+
+### 2. Analysis for Influencing Factors: 
+
+> Now we found the general trends of vaccinations among continents. In order to figure out the reasons behind these trends, we wanted to explore the following four factors of each region.
+  
+#### Factor 1: Human Dvelopment Index
+
+> The first factor that may contribute to the difference of vaccination among locations was the Human Development Index. We made a scatterplot and a least square regression line to find the relationship between Human Development Index and the number of vaccinations per hundred people. Human Development Index (HDI) is about expanding the richness of human life, rather than simply the richness of the economy in which human beings live. It is an approach that is focused on people and their opportunities and choice. HDI is a statistic composite index of life expectancy, education, and per capita income indicators, which are used to rank countries into four tiers of human development.
+  
+```{r, echo = FALSE}
+ggplot(covid_location, aes(x = human_development_index, y = vaccinations_per_hundred)) +
+  geom_point(aes(color = continent)) +
+  scale_y_log10(labels = function(x) format(x, scientific = FALSE)) +
+  geom_smooth(method = "lm", se=FALSE) +
+  xlab("Human Development Index") +
+  ylab("Vaccinations per Hundred People") +
+  ggtitle("Relationship between Human Development Index and Vaccinations Rate")
+```
+
+According to the graph, we could see that there was a positive correlation between Human Development Index and vaccination. Locations with a higher human development index were more likely to have a higher vaccination rate. Besides, we could observe that while most African locations gathered on the left part of the graph, most North American locations gathered on the right part of the graph. The distribution of locations from different continents was generally consistent with the results from the first bar graph, so this factor could explain the differences of vaccination between continents. 
+
+> We also wanted to further explore the correlation between Human Development Index and vaccination rate. We created an regression analysis to find if there's a correlation between Human Development Index and vaccination rate or not.
+
+```{r, echo = FALSE, results = "hide"}
+fit_hdi <- lm(vaccinations_per_hundred ~ human_development_index , data = covid_location)
+summary(fit_hdi)
+```
+
+According to the regression analysis, we could see that the estimated coefficient has a very small p-value (according to significance code), and the r squared is about 0.23, therefore, there's a correlation between Human Development Index and vaccination rate.
+
+#### Factor 2: GDP per capita
+
+> The second factor that could contribute to the difference of vaccination among locations may be the GDP per capita. We made a scatterplot and a smooth line to find the relationship between GDP per capita and the number of vaccinations per hundred people. GDP per capita is the Gross Domestic Product (GDP) per person. It is the total market value of all finished goods and services produced within a country in a set time period and then divide it by the population in each country.
+
+```{r, echo = FALSE}
+ggplot(covid_location, aes(x = gdp_per_capita, y = vaccinations_per_hundred)) +
+  geom_point(aes(color = continent)) +
+  scale_x_log10(labels = function(x) format(x, scientific = FALSE)) +
+  scale_y_log10(labels = function(x) format(x, scientific = FALSE)) +
+  geom_smooth(se = FALSE) +
+  xlab("GDP per Capita") +
+  ylab("Vaccinations per Hundred People") +
+  ggtitle("Relationship between GDP per Capita and Vaccinations Rate")
+```
+
+According to the scatterplot, GDP per capita also reflects a general trend about vaccinations. As GDP per capita increases, the vaccination rate also increases, so there was a positive correlation between GDP per capita and vaccination rate. The distribution of points in different colors also reflected the trend of vaccination among continents. Therefore, we inferred that the more well developed the locations or continents were, the higher COVID-19 vaccination rate they had. 
+
+> We also wanted to further explore the correlation between GDP per capita and vaccination rate. We created an regression analysis to find if there's a correlation between GDP per capita and vaccination rate or not.
+
+```{r, echo = FALSE, results = "hide"}
+fit_gdp <- lm(vaccinations_per_hundred ~ gdp_per_capita , data = covid_location)
+summary(fit_gdp)
+```
+
+According to the regression analysis, we could see that the estimated coefficient have a very small p-value (according to significance code), and the r squared is about 0.22, therefore, there's a correlation between GDP per capita and vaccination rate.
+
+#### Factor 3: GNI per capita
+
+> Another important factor may influence the vaccination rate would be the Gross National Income (GNI) per capita. It is the total income received by the country from its residents and businesses regardless of whether they are located and then divide it by the population in each country. We created a scatterplot to see the trend between vaccination rate and GNI per capita.
+
+```{r, echo = FALSE}
+covid_location1 <- covid_location %>%
+  select(vaccinations_per_hundred, gni_per_capita, continent) %>%
+  drop_na()
+
+covid_location1$gni_per_capita <- replaceCommas(covid_location1$gni_per_capita)
+
+covid_location2 <- covid_location1%>%
+  select(vaccinations_per_hundred, gni_per_capita, continent) %>%
+  arrange(gni_per_capita)
+
+ggplot(covid_location2, aes(gni_per_capita, vaccinations_per_hundred)) +
+  geom_point(aes(color = continent)) +
+  geom_smooth(method = "lm", se=FALSE) +
+  xlab("GNI per Capita") +
+  ylab("Vaccinations per Hundred") +
+  ggtitle("Relationship between GNI per Capita and Vaccinations Rate") +
+  scale_x_log10(labels = function(x) format(x, scientific = FALSE)) +
+  scale_y_log10(labels = function(x) format(x, scientific = FALSE)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+According to the scatterplot, GNI per capita reflects a general trend about vaccinations. As GNI per capita increases, the vaccination rate also increases, so there was a positive correlation between GNI per capita and vaccination rate. The distribution of points in different colors also reflected the trend of vaccination among continents. Therefore, we inferred that the higher income the locations or continents were, the higher COVID-19 vaccination rate they had. 
+
+> We also wanted to further explore the correlation between the Gross National Income per capita and vaccination rate. We created an regression analysis to find if there's a correlation between the Gross National Income (GNI) per capita and vaccination rate or not.
+
+```{r, echo = FALSE, results = "hide"}
+fit_gni <- lm(vaccinations_per_hundred ~ gni_per_capita , data = covid_location)
+summary(fit_gni)
+```
+
+According to the regression analysis, we could see that the estimated coefficient has a very small p-value (according to significance code), and the r squared is about 0.22, therefore, there's a correlation between the GNI per capita and vaccination rate.
+
+#### Factor 4: COVID-19 cases
+
+> Another factor that we wanted to examine was the number of COVID-19 cases, since we thought that cases of COVID-19 may affect how urgently people need vaccination or how seriously people treat vaccination, and therefore affect the number of vaccination doses. We made a scatterplot to show the relationship between the number of COVID cases per million people and the number of vaccinations per hundred people.
+
+```{r, echo = FALSE}
+ggplot(covid_location, aes(x = cases_per_million, y = vaccinations_per_hundred)) +
+  geom_point(aes(color = continent)) +
+  geom_smooth(se=FALSE) +
+  scale_x_log10(labels = function(x) format(x, scientific = FALSE)) +
+  scale_y_log10(labels = function(x) format(x, scientific = FALSE)) +
+  xlab("covid case per million people")+
+  ylab("success vaccinations rate per hundred people in a continent") +
+  ggtitle("Relationship between COVID-19 cases and vaccination")
+```
+
+According to the scatterplot and the smooth line fitting the points, we could see that in general, there was a positive correlation between COVID-19 cases per million and vaccinations per hundred. The slope of the smooth line, which basically showed how vaccination correlated with COVID-19 cases, was close to 0 when cases per million was fewer than 100. However, after cases per million reached to 100, the slope became more and more positive. This showed that when there were only a few COVID-19 cases per million, the relationship between COVID-19 cases and vaccination was relatively weak, but when there were a large number of COVID-19 cases per million, as cases per million increased, there was also an increasing of vaccinations per hundred.
+
+> We also wanted to further explore the correlation between the Gross National Income per capita and vaccination rate. We created an regression analysis to find if there's a correlation between the Gross National Income (GNI) per capita and vaccination rate or not.
+
+```{r, echo = FALSE, results = "hide"}
+fit_cases <- lm(vaccinations_per_hundred ~ cases_per_million, data = covid_location)
+summary(fit_cases)
+```
+
+According to the regression analysis, we could see that the estimated coefficient has a very small p-value (according to significance code), and the r squared is about 0.24, therefore, there's a correlation between the number of COVID-19 cases and vaccination rate.
+
+> Then we used a hypothesis test to examine whether there were different proportions of widely vaccinated locations in locations with severe (covid cases per million more than 5000) covid cases and locations with less severe covid cases, in order to further support our conclusion on factor 4. We were wondering if the areas with severe cases has the same probability of widely vaccinated (vaccination per hundred is greater than 5) as the areas with less severe cases. We got a p-value for the test and showed it in a standard normal distribution.
+
+The null hypothesis was that the proportion of widely vaccinated in severe locations and non severe locations were the same.
+
+The alternative hypothesis was that the proportion of widely vaccinated in severe locations and non severe locations were not the same.
+
+$$
+H_0: p_{\text{severe}} = p_{\text{non severe}} \\
+H_a: p_{\text{severe}} \neq p_{\text{non severe}}
+$$
+
+```{r, echo = FALSE, fig.show = "hide"}
+summary <- covid_location %>%
+  group_by(severe_covid, wide_vaccination) %>%
+  summarize(n = n()) 
+
+p_hat_severe <- 69 / (69+38)
+p_hat_non_severe <- 8 / (65+8)
+p <- (69+8) / (69+38+65+8)
+est <- p_hat_severe - p_hat_non_severe
+sd <- sqrt(p*(1-p)/(69+38) + p*(1-p)/(65+8))
+z <- est / sd
+p_value <- 2*pnorm(-abs(z))
+
+gnorm() +
+  geom_vline(xintercept = z, color = "red", linetype = 2) +
+  geom_vline(xintercept = -z, color = "red", linetype = 2) +
+  theme_bw()
+```
+
+The p-value we got was about $10^{-12}$, which was about 1 in $10^{12}$. This was highly statistically significant. Therefore, we could reject our null hypothesis. We could state that there was a very strong evidence ($p \approx 10^{-12}$, two-sided z test) that the proportions of widely vaccinated countries in severe countries and in non severe countries were not equal. This better supported our conclusion on factor 4 that there's a positive correlation between the number of covid cases instead of having similar vaccination probabilities in both severe and non severe locations.
+
+## **Discussion**
+
+### Interpretations and Thoughts
+
+According to our findings, there were several factors contributing to the unequal vaccination rates in different regions, including: GDP per capita, human development index, GNI per capita, and COVID cases. As for countries with higher human development index, they were more industrialized, and they had better infrastructures such as hospitals, clinics, etc.. Moreover, a higher human development index the richness of human life was higher in terms of life expectancy, education etc, which is usually higher for richer countries and hence have better access to health care. Therefore, people in these countries would have more access to vaccine resources than people in less developed countries. Moreover, with higher GDP per capita, countries had better performance on their economy. Since they may have more assets or money to support the research on vaccinations, they may come up with more types of vaccines available rather than waiting for purchasing other countries' vaccines. Besides, GDP in some ways also directly measured a countries' wealth, and countries with higher GDP per capita can afford more vaccines than other countries. Meanwhile, countries with higher GNI per capita suggested that they would have higher income levels than other countries. On the one hand, the government may support the society such as offering free vaccinations for all local people. On the other hand, people in countries with higher GNI per capita would have less financial pressure than people in lower GNI per capita countries when they need to pay for their vaccinations. Last but not the least, countries with more COVID cases may take the pandemic seriously quicker than other countries. In this case, they may prefer to develop their vaccines as soon as possible in order to get more people vaccinated and prevent further spread. Another possibility was that sometimes, a lower number of reported COVID cases may indicate that people do not have access to COVID tests. This could relate to a lower human development index, GDP per capita, or GNI per capita, and can accordingly lead to a lower vaccination rate. In a nutshell, these factors would mainly affect the countries' ability to support overall researches on vaccinations, accesses to vaccinations and covid tests, and the speed of vaccine development, therefore affect the vaccination rates among each country. All these were factors that directly indicate the wealth of different countries and with all the correlation we have drawn it was clear that there had been an inequitable distribution of vaccinations. While the richer countries approach herd immunity, poorer countries (often ones that do not have the resources to tackle a massive wave) were left without vaccines vulnerable to another wave with thousands of lives at stake.
+
+We also thought that there could be several reasons leading to the different use of different types of vaccines. The first reason was that they may have different effective rate. The more effective a vaccine type was, the more likely countries were going to use it. Another factor could be each vaccine's production rate. A vaccine with a higher production rate could more easily meet the demand of each country, and therefore could achieve better competition among all vaccines. 
+
+An interesting point was that although the AstraZeneca vaccine was approved after Pfizer and Monderna, and despite it being the most controversial in terms of bloodclots and other side effects, it was the used in most countries. This might be because of the fact that larger economies like the US and UK did first approve the Pfizer and Moderna leaving barely any room of other countries to be able to get those vaccines thus having to rely on other vaccines. In that case our histogram could be susceptible to misinterpretation. To avoid that it was important to remember that this histogram counted the number of countries using a certain kind of vaccine which in no way captured the total number of vaccines.
+
+### Challenges and Weaknesses
+
+Before getting the two current datasets, we had tried another dataset which only included vaccination data from February 10th to February 16th. However, we encountered several problems when analyzing that dataset. Since we only had a short range of date with corresponding vaccinations information and the data was not specific by displaying vaccinations in range of continent, after we cleaned the data and created data frames for problems, we found that the diagrams could not effectively demonstrate the trend on our predictions. So we decided to search through internet again and get a more completed data set with similar information about vaccinations in order to create a better visualization and more accurate analysis to the vaccinations around the World.The new data set was what we were using for this analysis, and it could be interpreted at a wider date range and analyzed into more details from each country among continents.
+
+We found that there might be some weaknesses in our analysis due to several reasons. Firstly, we made some assumptions in order to tidy and analyze our data, but some of the assumptions may not be accurate. For example, we filled those empty cells of new_vaccinations and total_vaccinations with 0, but in fact, some of them may be unknown instead of 0. 
+
+In addition, the choice of scales may lead to some inaccuracy of our analysis. We used log10 for some scales but not for others, and the standard that we decided which type of scale to choose was the readability of the graphs. If many points clustered at one end, then we changed our scale to log10. This made our graphs more readable but less accurate in showing the actual relationship between variables.
+
+The choice of thresholds was also not quite accurate. When we tried to categorize locations into two groups (widely_vaccinated or not, severe-covid or not), we determined the threshold by directly observing the dataset and got an approximate median. Therefore, the thresholds may not be rigorous and could decrease the accuracy of our analysis results.
+
+Besides, when we explored the relationships between variables, since we did not conduct an experiment, we could only get a correlation between them. Therefore, it was just our guess based on the results that these factors contribute to the differences in vaccination, but we actually could not get any causal relationships. 
+
+Another shortcoming about our analysis was that when we were analyzing the third factor: type of vaccines, we were thinking to find the relationship between new_vaccinations and different types of vaccine on different date. However, our data could not support us find that because we do not have data stating how many new vaccinations increased for each types of vaccination, we only had total increased new vaccination for all types of vaccine. Therefore, we used "number of countries" instead in order to find a trend showing that as date come to recent, some types of vaccine were used more often than others. In order to better support our statement, we may want to find each vaccine's effective rate and production rate, and then create a line chart to find the relationship between effective rate, production rate, and the number of vaccinations.
+
+Overall, since we are still in the middle of the pandemic, the number of cases and the number of vaccinations continue to change. There are countries going through various waves that we have failed to account for especially the spike in covid cases in India. Therefore, our data analysis only reflected the date in a specific period instead of the most recent date.
+
+### Recommendations and Future Directions
+
+According to our findings, gdp per capita and human development index were two important factors influencing COVID-19 vaccinations, and the difference in these two factors contributed to the uneven distribution of COVID-19 vaccinations in different locations. Therefore, in order to make vaccinations available to everyone and achieve worldwide herd immunity as soon as possible, we could give more support to the locations with lower gdp per capita and human development index.
+
+Overall, we did our analysis mostly based on the information we have in our dataset, such as GDP per capita, and human development index. However, there may be factors that were not in our dataset but still possibly had impact on the vaccination rate, such as vaccine price per dose and etc. Therefore, in order to find more comprehensive analysis, we could explore more factors in our further analysis.
+
+## **Reference**
+
+https://doi.org/10.1038/s41597-020-00688-8
+https://ourworldindata.org/covid-vaccinations
+https://www.worldometers.info/coronavirus/
+https://www.nytimes.com/interactive/2020/world/coronavirus-maps.html
+https://www.nytimes.com/interactive/2021/world/covid-vaccinations-tracker.html
+https://github.com/owid/covid-19-data/tree/master/public/data/vaccinations
+https://datacatalog.worldbank.org/dataset/gni-capita-ranking-atlas-method-and-ppp-base
